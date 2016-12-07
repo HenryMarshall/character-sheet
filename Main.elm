@@ -6,21 +6,29 @@ import Html.Events exposing (..)
 
 
 type alias Model =
+    -- IIRC you can't iterate over a records keys. Using a list we have to
+    -- iterate over for *every* relevant ability seems like madness though.
+    -- FWIW, this is similar to how James Moore stored players in the demo
+    -- scoreboard app from knowthen. Perhaps the solution is a union type of
+    -- the different abilities?
     { abilities : List Ability
     , skills : List Skill
     }
 
 
 type alias Ability =
-    { score : Int
+    { score :
+        Int
+        -- Would it be wise to cache the "modifier", it is derived exclusively
+        -- from the score.
     , name : String
     }
 
 
 type alias Skill =
-    -- Perhaps this should be the `Ability` itself, rather than its "name"
-    { ability : String
-    , ranks : Int
+    -- Perhaps this should be the `Ability` itself, rather than its `name`
+    { ranks : Int
+    , ability : String
     , name : String
     }
 
@@ -33,26 +41,110 @@ initModel =
 
         abilityNames =
             [ "STR", "DEX", "CON", "INT", "WIS", "CHA" ]
+
+        newSkill =
+            Skill 0
     in
         { abilities = List.map newAbility abilityNames
         , skills =
-            [ Skill "DEX" 0 "Acrobatics"
-            , Skill "INT" 0 "Appraise"
-            , Skill "CHA" 0 "Bluff"
+            [ newSkill "DEX" "Acrobatics"
+            , newSkill "INT" "Appraise"
+            , newSkill "CHA" "Bluff"
+            , newSkill "STR" "Climb"
+            , newSkill "INT" "Craft"
+            , newSkill "CHA" "Diplomacy"
+            , newSkill "DEX" "Disable Device"
+            , newSkill "CHA" "Disguise"
+            , newSkill "DEX" "Escape Artist"
+            , newSkill "DEX" "Fly"
+            , newSkill "CHA" "Handle Animal"
+            , newSkill "WIS" "Heal"
+            , newSkill "CHA" "Intimidate"
+            , newSkill "INT" "Knowledge (Arcana)"
+            , newSkill "INT" "Knowledge (Dungeoneering)"
+            , newSkill "INT" "Knowledge (Engineering)"
+            , newSkill "INT" "Knowledge (Geography)"
+            , newSkill "INT" "Knowledge (History)"
+            , newSkill "INT" "Knowledge (Local)"
+            , newSkill "INT" "Knowledge (Nature)"
+            , newSkill "INT" "Knowledge (Nobility)"
+            , newSkill "INT" "Knowledge (Planes)"
+            , newSkill "INT" "Knowledge (Religion)"
+            , newSkill "INT" "Linguistics"
+            , newSkill "WIS" "Perception"
+            , newSkill "CHA" "Perform"
+            , newSkill "WIS" "Profession"
+            , newSkill "DEX" "Ride"
+            , newSkill "WIS" "Sense Motive"
+            , newSkill "DEX" "Sleight of Hand"
+            , newSkill "INT" "Spellcraft"
+            , newSkill "DEX" "Stealth"
+            , newSkill "WIS" "Survival"
+            , newSkill "STR" "Swim"
+            , newSkill "CHA" "Use Magic Device"
             ]
         }
 
 
 type Msg
-    = AbilityScore
-    | SkillRank
+    = AbilityScore String String
+    | SkillRank String String
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        _ ->
-            model
+        AbilityScore name score ->
+            { model | abilities = (abilityScore model.abilities name score) }
+
+        SkillRank name ranks ->
+            { model | skills = (skillRank model.skills name ranks) }
+
+
+skillRank : List Skill -> String -> String -> List Skill
+skillRank skills name newRanks =
+    case (String.toInt newRanks) of
+        Ok ranks ->
+            List.map
+                (\skill ->
+                    if skill.name == name then
+                        -- I could abstract skillRanks and abilityScore into a
+                        -- single function if I knew how to use a variable key
+                        -- ("ranks" vs "score" in the following).
+                        { skill | ranks = (Basics.max 0 ranks) }
+                    else
+                        skill
+                )
+                skills
+
+        Err err ->
+            skills
+
+
+abilityScore : List Ability -> String -> String -> List Ability
+abilityScore abilities name newScore =
+    case (String.toInt newScore) of
+        Ok score ->
+            List.map
+                (\ability ->
+                    if ability.name == name then
+                        { ability | score = (Basics.max 0 score) }
+                    else
+                        ability
+                )
+                abilities
+
+        Err err ->
+            abilities
+
+
+abilityModifier : Int -> Int
+abilityModifier score =
+    score
+        |> (+) -10
+        |> toFloat
+        |> (*) 0.5
+        |> floor
 
 
 view : Model -> Html Msg
@@ -60,7 +152,7 @@ view model =
     div []
         [ h1 [] [ text "Elm Character Sheet" ]
         , abilities model.abilities
-        , skills model.skills
+        , skills model
         ]
 
 
@@ -68,13 +160,112 @@ abilities : List Ability -> Html Msg
 abilities abilities =
     div []
         [ h2 [] [ text "Abilities" ]
+        , abilityHeader
+            :: (List.map ability abilities)
+            |> table []
         ]
 
 
-skills : List Skill -> Html Msg
-skills skills =
+abilityHeader =
+    tr []
+        [ th [] [ text "Ability" ]
+        , th [] [ text "Score" ]
+        , th [] [ text "Modifier" ]
+        ]
+
+
+ability : Ability -> Html Msg
+ability ability =
+    -- Naming conventions for functions and their params. This is the pattern
+    -- used by James Moore, but it seems that way lies madness.
+    tr []
+        [ td []
+            [ text ability.name ]
+        , td []
+            [ input
+                [ value (toString ability.score)
+                , onInput (AbilityScore ability.name)
+                , type_ "number"
+                  -- Is it better to enforce the minimum here, in the update
+                  -- handler or both?
+                , Html.Attributes.min "0"
+                ]
+                []
+            ]
+        , td []
+            [ text
+                (ability.score
+                    |> abilityModifier
+                    |> toString
+                )
+            ]
+        ]
+
+
+skills : Model -> Html Msg
+skills model =
     div []
-        [ h2 [] [ text "Skills" ] ]
+        [ h2 [] [ text "Skills" ]
+        , skillHeader
+            :: (List.map (skill model) model.skills)
+            |> table []
+        ]
+
+
+skillHeader =
+    tr []
+        [ th [] [ text "Name" ]
+        , th [] [ text "Bonus" ]
+        , th [] [ text "Ability" ]
+        , th [] [ text "Ability Mod" ]
+        , th [] [ text "Ranks" ]
+        ]
+
+
+skill : Model -> Skill -> Html Msg
+skill model skill =
+    tr []
+        [ td [] [ text skill.name ]
+        , td [] [ text (toString (skillModifier model skill)) ]
+        , td [] [ text skill.ability ]
+          -- I hate having to pass around the entire model for this value
+        , td [] [ text (toString (modifierFromName model.abilities skill.ability)) ]
+        , td []
+            [ input
+                [ value (toString skill.ranks)
+                , onInput (SkillRank skill.name)
+                , type_ "number"
+                , Html.Attributes.min "0"
+                ]
+                []
+            ]
+        ]
+
+
+skillModifier : Model -> Skill -> Int
+skillModifier model skill =
+    let
+        abilityModifier =
+            modifierFromName model.abilities skill.ability
+    in
+        skill.ranks + abilityModifier
+
+
+modifierFromName : List Ability -> String -> Int
+modifierFromName abilities name =
+    let
+        ability =
+            abilities
+                |> List.filter (\ability -> ability.name == name)
+                |> List.head
+    in
+        case ability of
+            Just ability ->
+                abilityModifier ability.score
+
+            -- Perhaps this should be an error...
+            Nothing ->
+                0
 
 
 main : Program Never Model Msg
