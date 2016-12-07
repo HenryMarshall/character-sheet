@@ -55,8 +55,37 @@ type Msg
 update : Msg -> Model -> Model
 update msg model =
     case msg of
+        AbilityScore name score ->
+            { model | abilities = (abilityScore model.abilities name score) }
+
         _ ->
             model
+
+
+abilityScore : List Ability -> String -> String -> List Ability
+abilityScore abilities name newScore =
+    case (String.toInt newScore) of
+        Ok score ->
+            List.map
+                (\ability ->
+                    if ability.name == name then
+                        { ability | score = score }
+                    else
+                        ability
+                )
+                abilities
+
+        Err err ->
+            abilities
+
+
+abilityModifier : Int -> Int
+abilityModifier score =
+    score
+        |> (+) -10
+        |> toFloat
+        |> (*) 0.5
+        |> floor
 
 
 view : Model -> Html Msg
@@ -107,11 +136,6 @@ ability ability =
                 )
             ]
         ]
-
-
-abilityModifier : Int -> Int
-abilityModifier score =
-    (score - 10) // 2
 
 
 skills : List Skill -> Html Msg
