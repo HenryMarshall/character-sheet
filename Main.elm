@@ -6,6 +6,10 @@ import Html.Events exposing (..)
 
 
 type alias Model =
+    -- IIRC you can't iterate over a records keys. Using a list we have to
+    -- iterate over for *every* relevant ability seems like madness though.
+    -- FWIW, this is similar to how James Moore stored players in the demo
+    -- scoreboard app from knowthen.
     { abilities : List Ability
     , skills : List Skill
     }
@@ -18,7 +22,7 @@ type alias Ability =
 
 
 type alias Skill =
-    -- Perhaps this should be the `Ability` itself, rather than its "name"
+    -- Perhaps this should be the `Ability` itself, rather than its `name`
     { ability : String
     , ranks : Int
     , name : String
@@ -44,7 +48,7 @@ initModel =
 
 
 type Msg
-    = AbilityScore
+    = AbilityScore String String
     | SkillRank
 
 
@@ -68,7 +72,46 @@ abilities : List Ability -> Html Msg
 abilities abilities =
     div []
         [ h2 [] [ text "Abilities" ]
+        , abilityHeader
+            :: (List.map ability abilities)
+            |> table []
         ]
+
+
+abilityHeader =
+    tr []
+        [ th [] [ text "Ability" ]
+        , th [] [ text "Score" ]
+        , th [] [ text "Modifier" ]
+        ]
+
+
+ability : Ability -> Html Msg
+ability ability =
+    tr []
+        [ td []
+            [ text ability.name ]
+        , td []
+            [ input
+                [ value (toString ability.score)
+                , onInput (AbilityScore ability.name)
+                , type_ "number"
+                ]
+                []
+            ]
+        , td []
+            [ text
+                (ability.score
+                    |> abilityModifier
+                    |> toString
+                )
+            ]
+        ]
+
+
+abilityModifier : Int -> Int
+abilityModifier score =
+    (score - 10) // 2
 
 
 skills : List Skill -> Html Msg
