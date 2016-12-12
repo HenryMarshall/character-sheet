@@ -5,6 +5,9 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 
 
+-- MODEL
+
+
 type alias Model =
     -- IIRC you can't iterate over a records keys. Using a list we have to
     -- iterate over for *every* relevant ability seems like madness though.
@@ -13,6 +16,7 @@ type alias Model =
     -- the different abilities?
     { abilities : List Ability
     , skills : List Skill
+    , dieFace : Int
     }
 
 
@@ -33,8 +37,8 @@ type alias Skill =
     }
 
 
-initModel : Model
-initModel =
+init : ( Model, Cmd Msg )
+init =
     let
         newAbility =
             Ability 10
@@ -45,60 +49,75 @@ initModel =
         newSkill =
             Skill 0
     in
-        { abilities = List.map newAbility abilityNames
-        , skills =
-            [ newSkill "DEX" "Acrobatics"
-            , newSkill "INT" "Appraise"
-            , newSkill "CHA" "Bluff"
-            , newSkill "STR" "Climb"
-            , newSkill "INT" "Craft"
-            , newSkill "CHA" "Diplomacy"
-            , newSkill "DEX" "Disable Device"
-            , newSkill "CHA" "Disguise"
-            , newSkill "DEX" "Escape Artist"
-            , newSkill "DEX" "Fly"
-            , newSkill "CHA" "Handle Animal"
-            , newSkill "WIS" "Heal"
-            , newSkill "CHA" "Intimidate"
-            , newSkill "INT" "Knowledge (Arcana)"
-            , newSkill "INT" "Knowledge (Dungeoneering)"
-            , newSkill "INT" "Knowledge (Engineering)"
-            , newSkill "INT" "Knowledge (Geography)"
-            , newSkill "INT" "Knowledge (History)"
-            , newSkill "INT" "Knowledge (Local)"
-            , newSkill "INT" "Knowledge (Nature)"
-            , newSkill "INT" "Knowledge (Nobility)"
-            , newSkill "INT" "Knowledge (Planes)"
-            , newSkill "INT" "Knowledge (Religion)"
-            , newSkill "INT" "Linguistics"
-            , newSkill "WIS" "Perception"
-            , newSkill "CHA" "Perform"
-            , newSkill "WIS" "Profession"
-            , newSkill "DEX" "Ride"
-            , newSkill "WIS" "Sense Motive"
-            , newSkill "DEX" "Sleight of Hand"
-            , newSkill "INT" "Spellcraft"
-            , newSkill "DEX" "Stealth"
-            , newSkill "WIS" "Survival"
-            , newSkill "STR" "Swim"
-            , newSkill "CHA" "Use Magic Device"
-            ]
-        }
+        ( { abilities = List.map newAbility abilityNames
+          , skills =
+                [ newSkill "DEX" "Acrobatics"
+                , newSkill "INT" "Appraise"
+                , newSkill "CHA" "Bluff"
+                , newSkill "STR" "Climb"
+                , newSkill "INT" "Craft"
+                , newSkill "CHA" "Diplomacy"
+                , newSkill "DEX" "Disable Device"
+                , newSkill "CHA" "Disguise"
+                , newSkill "DEX" "Escape Artist"
+                , newSkill "DEX" "Fly"
+                , newSkill "CHA" "Handle Animal"
+                , newSkill "WIS" "Heal"
+                , newSkill "CHA" "Intimidate"
+                , newSkill "INT" "Knowledge (Arcana)"
+                , newSkill "INT" "Knowledge (Dungeoneering)"
+                , newSkill "INT" "Knowledge (Engineering)"
+                , newSkill "INT" "Knowledge (Geography)"
+                , newSkill "INT" "Knowledge (History)"
+                , newSkill "INT" "Knowledge (Local)"
+                , newSkill "INT" "Knowledge (Nature)"
+                , newSkill "INT" "Knowledge (Nobility)"
+                , newSkill "INT" "Knowledge (Planes)"
+                , newSkill "INT" "Knowledge (Religion)"
+                , newSkill "INT" "Linguistics"
+                , newSkill "WIS" "Perception"
+                , newSkill "CHA" "Perform"
+                , newSkill "WIS" "Profession"
+                , newSkill "DEX" "Ride"
+                , newSkill "WIS" "Sense Motive"
+                , newSkill "DEX" "Sleight of Hand"
+                , newSkill "INT" "Spellcraft"
+                , newSkill "DEX" "Stealth"
+                , newSkill "WIS" "Survival"
+                , newSkill "STR" "Swim"
+                , newSkill "CHA" "Use Magic Device"
+                ]
+          , dieFace = 0
+          }
+        , Cmd.none
+        )
+
+
+
+-- MESSAGES
 
 
 type Msg
     = AbilityScore String String
     | SkillRank String String
+    | Roll
 
 
-update : Msg -> Model -> Model
+
+-- UPDATE
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         AbilityScore name score ->
-            { model | abilities = (abilityScore model.abilities name score) }
+            ( { model | abilities = (abilityScore model.abilities name score) }, Cmd.none )
 
         SkillRank name ranks ->
-            { model | skills = (skillRank model.skills name ranks) }
+            ( { model | skills = (skillRank model.skills name ranks) }, Cmd.none )
+
+        Roll ->
+            ( model, Cmd.none )
 
 
 skillRank : List Skill -> String -> String -> List Skill
@@ -147,12 +166,26 @@ abilityModifier score =
         |> floor
 
 
+
+-- SUBSCRIPTIONS
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.none
+
+
+
+-- VIEW
+
+
 view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Elm Character Sheet" ]
         , abilities model.abilities
         , skills model
+        , dieDisplay model
         ]
 
 
@@ -242,6 +275,14 @@ skill model skill =
         ]
 
 
+dieDisplay : Model -> Html Msg
+dieDisplay model =
+    div []
+        [ h1 [] [ text (toString model.dieFace) ]
+        , button [ onClick Roll ] [ text "Roll" ]
+        ]
+
+
 skillModifier : Model -> Skill -> Int
 skillModifier model skill =
     let
@@ -270,8 +311,9 @@ modifierFromName abilities name =
 
 main : Program Never Model Msg
 main =
-    Html.beginnerProgram
-        { model = initModel
+    Html.program
+        { init = init
         , view = view
         , update = update
+        , subscriptions = subscriptions
         }
