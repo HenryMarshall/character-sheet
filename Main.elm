@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Random
 
 
 -- MODEL
@@ -14,9 +15,9 @@ type alias Model =
     -- FWIW, this is similar to how James Moore stored players in the demo
     -- scoreboard app from knowthen. Perhaps the solution is a union type of
     -- the different abilities?
-    { abilities : List Ability
+    { dieFace : Int
+    , abilities : List Ability
     , skills : List Skill
-    , dieFace : Int
     }
 
 
@@ -101,6 +102,7 @@ type Msg
     = AbilityScore String String
     | SkillRank String String
     | Roll
+    | NewFace Int
 
 
 
@@ -117,7 +119,10 @@ update msg model =
             ( { model | skills = (skillRank model.skills name ranks) }, Cmd.none )
 
         Roll ->
-            ( model, Cmd.none )
+            ( model, Random.generate NewFace (Random.int 1 20) )
+
+        NewFace newFace ->
+            ( { model | dieFace = newFace }, Cmd.none )
 
 
 skillRank : List Skill -> String -> String -> List Skill
