@@ -1,0 +1,34 @@
+{
+  "name": "pf-character-sheet",
+  "version": "0.1.0",
+  "description": "An elm based pathfinder character sheet with status effects and a dice roller",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hbaughman/character-sheet.git"
+  },
+  "keywords": [
+    "elm",
+    "pathfinder",
+    "character-sheet",
+    "dnd",
+    "d&d",
+    "dungeons-and-dragons"
+  ],
+  "author": "Henry Baughman <hbaughman.dev@gmail.com> (http://henrymarshall.xyz/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hbaughman/character-sheet/issues"
+  },
+  "homepage": "https://github.com/hbaughman/character-sheet#readme",
+  "devDependencies": {
+    "gulp": "3.9.1",
+    "gulp-autoprefixer": "3.1.1",
+    "gulp-livereload": "3.8.1",
+    "gulp-sass": "3.0.0",
+    "gulp-sourcemaps": "1.9.1"
+  }
+}
