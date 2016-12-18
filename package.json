@@ -4,7 +4,8 @@
   "description": "An elm based pathfinder character sheet with status effects and a dice roller",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,9 @@
   "devDependencies": {
     "gulp": "3.9.1",
     "gulp-autoprefixer": "3.1.1",
+    "gulp-elm": "0.6.1",
     "gulp-livereload": "3.8.1",
+    "gulp-plumber": "1.1.0",
     "gulp-sass": "3.0.0",
     "gulp-sourcemaps": "1.9.1"
   }
