@@ -18,8 +18,8 @@ gulp.task("sass", function() {
 
 gulp.task("elm", function() {
   return gulp.src("src/Main.elm")
-    .pipe(plumber())
-    .pipe(elm.bundle("script.js"))
+    .pipe(plumber(errorHandler))
+    .pipe(elm.bundle("script.js", { debug: true }))
     .pipe(gulp.dest("build"))
 })
 
@@ -33,3 +33,6 @@ gulp.task("watch", function() {
 
 gulp.task("default", ["build", "watch"])
 
+function errorHandler(err) {
+  this.emit("end")
+}
