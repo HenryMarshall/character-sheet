@@ -187,7 +187,7 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Elm Character Sheet" ]
+        [ h1 [ class "some-class" ] [ text "Elm Character Sheet" ]
         , abilities model.abilities
         , skills model
         , dieDisplay model
@@ -197,13 +197,14 @@ view model =
 abilities : List Ability -> Html Msg
 abilities abilities =
     div []
-        [ h2 [] [ text "Abilities" ]
+        [ h2 [ id "some-id" ] [ text "Abilities" ]
         , abilityHeader
             :: (List.map ability abilities)
             |> table []
         ]
 
 
+abilityHeader : Html Msg
 abilityHeader =
     tr []
         [ th [] [ text "Ability" ]
@@ -243,13 +244,14 @@ ability ability =
 skills : Model -> Html Msg
 skills model =
     div []
-        [ h2 [] [ text "Skills" ]
+        [ h2 [ id "some-id" ] [ text "Skills" ]
         , skillHeader
             :: (List.map (skill model) model.skills)
             |> table []
         ]
 
 
+skillHeader : Html Msg
 skillHeader =
     tr []
         [ th [] [ text "Name" ]

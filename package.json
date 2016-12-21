@@ -1,0 +1,42 @@
+{
+  "name": "pf-character-sheet",
+  "version": "0.1.0",
+  "description": "An elm based pathfinder character sheet with status effects and a dice roller",
+  "main": "index.html",
+  "scripts": {
+    "elm-build": "elm make --output build/script.js --warn src/elm/Main.elm",
+    "elm-watch": "nodemon -w src/elm/ -e elm --exec 'npm -s run elm-build'",
+    "sass-build": "gulp sass",
+    "sass-watch": "nodemon -w src/sass/ -e sass,scss --exec 'npm -s run sass-build'",
+    "serve": "browser-sync start --config=browser-sync.js",
+    "start": "npm-run-all --parallel *-watch serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hbaughman/character-sheet.git"
+  },
+  "keywords": [
+    "elm",
+    "pathfinder",
+    "character-sheet",
+    "dnd",
+    "d&d",
+    "dungeons-and-dragons"
+  ],
+  "author": "Henry Baughman <hbaughman.dev@gmail.com> (http://henrymarshall.xyz/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hbaughman/character-sheet/issues"
+  },
+  "homepage": "https://github.com/hbaughman/character-sheet#readme",
+  "devDependencies": {
+    "browser-sync": "2.18.5",
+    "connect-history-api-fallback": "1.3.0",
+    "gulp": "3.9.1",
+    "gulp-autoprefixer": "3.1.1",
+    "gulp-sass": "3.0.0",
+    "nodemon": "1.11.0",
+    "npm-run-all": "3.1.2"
+  }
+}
