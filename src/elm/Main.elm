@@ -204,6 +204,7 @@ abilities abilities =
         ]
 
 
+abilityHeader : Html Msg
 abilityHeader =
     tr []
         [ th [] [ text "Ability" ]
@@ -250,6 +251,7 @@ skills model =
         ]
 
 
+skillHeader : Html Msg
 skillHeader =
     tr []
         [ th [] [ text "Name" ]

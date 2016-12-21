@@ -5,7 +5,11 @@
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "gulp"
+    "elm-build": "elm make --output build/script.js --warn src/elm/Main.elm",
+    "elm-watch": "nodemon -w src/elm/ -e elm --exec 'npm -s run elm-build'",
+    "sass-build": "gulp sass",
+    "sass-watch": "nodemon -w src/sass/ -e sass,scss --exec 'npm -s run sass-build'",
+    "start": "npm-run-all --parallel *-watch"
   },
   "repository": {
     "type": "git",
@@ -29,8 +33,8 @@
     "browser-sync": "2.18.5",
     "gulp": "3.9.1",
     "gulp-autoprefixer": "3.1.1",
-    "gulp-livereload": "3.8.1",
     "gulp-sass": "3.0.0",
-    "gulp-sourcemaps": "1.9.1"
+    "nodemon": "1.11.0",
+    "npm-run-all": "3.1.2"
   }
 }
