@@ -1,7 +1,7 @@
 module.exports = {
-  files: ["build/*.(html|css|js)"],
+  files: ["build/*.(css|js)", "index.html"],
   server: {
-    baseDir: "build",
+    baseDir: ".",
     middleware: [
       require("connect-history-api-fallback")(),
     ],
