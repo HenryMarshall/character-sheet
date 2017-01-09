@@ -186,18 +186,23 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ h1 [ class "some-class" ] [ text "Elm Character Sheet" ]
+    div [ class "sheet" ]
+        [ header []
+              [ div [ class "hero" ]
+                    [ h1 [ class "title" ] [ text "Character Sheet" ]
+                    , h2 [ class "subtitle" ] [ text "for Pathfinder" ]
+                    ]
+              , dieDisplay model
+              ]
         , abilities model.abilities
         , skills model
-        , dieDisplay model
         ]
 
 
 abilities : List Ability -> Html Msg
 abilities abilities =
-    div []
-        [ h2 [ id "some-id" ] [ text "Abilities" ]
+    div [ class "abilities" ]
+        [ h2 [] [ text "Abilities" ]
         , abilityHeader
             :: (List.map ability abilities)
             |> table []
@@ -243,8 +248,8 @@ ability ability =
 
 skills : Model -> Html Msg
 skills model =
-    div []
-        [ h2 [ id "some-id" ] [ text "Skills" ]
+    div [ class "skills" ]
+        [ h2 [] [ text "Skills" ]
         , skillHeader
             :: (List.map (skill model) model.skills)
             |> table []
@@ -284,7 +289,7 @@ skill model skill =
 
 dieDisplay : Model -> Html Msg
 dieDisplay model =
-    div []
+    div [ class "die-rolls" ]
         [ h1 [] [ text (toString model.dieFace) ]
         , button [ onClick Roll ] [ text "Roll" ]
         ]
@@ -314,6 +319,7 @@ modifierFromName abilities name =
             -- Perhaps this should be an error...
             Nothing ->
                 0
+
 
 
 main : Program Never Model Msg
