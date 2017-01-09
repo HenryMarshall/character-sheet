@@ -188,14 +188,53 @@ view : Model -> Html Msg
 view model =
     div [ class "sheet" ]
         [ header []
-              [ div [ class "hero" ]
-                    [ h1 [ class "title" ] [ text "Character Sheet" ]
-                    , h2 [ class "subtitle" ] [ text "for Pathfinder" ]
-                    ]
-              , dieDisplay model
-              ]
-        , abilities model.abilities
+            [ div [ class "hero" ]
+                [ h1 [ class "title" ] [ text "Character Sheet" ]
+                , h2 [ class "subtitle" ] [ text "for Pathfinder" ]
+                ]
+            , dieDisplay model
+            ]
+        , div [ class "main" ]
+            [ abilities model.abilities
+            , div [ class "hp" ] [ text "HP" ]
+            , saves model.abilities
+            ]
         , skills model
+        ]
+
+
+saves : List Ability -> Html Msg
+saves abilities =
+    let
+        modifier =
+            modifierFromName abilities
+    in
+        table []
+            [ saveHeader
+            , save "Fortitude" (modifier "CON")
+            , save "Reflex" (modifier "REF")
+            , save "Will" (modifier "WIS")
+            ]
+
+
+saveHeader : Html Msg
+saveHeader =
+    tr []
+        [ th [] [ text "Save" ]
+        , th [] [ text "Total" ]
+        , th [] [ text "Base" ]
+        , th [] [ text "Ability" ]
+        ]
+
+
+save : String -> Int -> Html Msg
+save name modifier =
+    tr [ class "save" ]
+        [ h3 [] [ text name ]
+        , td [] [ text ("00 + " ++ (toString modifier)) ]
+          -- The Base Modifier should be derived from the character class.
+        , td [] [ text "00" ]
+        , td [] [ text (toString modifier) ]
         ]
 
 
@@ -319,7 +358,6 @@ modifierFromName abilities name =
             -- Perhaps this should be an error...
             Nothing ->
                 0
-
 
 
 main : Program Never Model Msg

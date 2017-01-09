@@ -6,6 +6,20 @@
 
 .die-rolls
   @include span-columns(8)
+  background-color: lightgrey
 
-.skills, .abilities
+.main
   @include span-columns(6)
+
+.skills
+  @include span-columns(6)
+
+.abilities
+  @include span-columns(3 of 6)
+
+.hp
+  @include span-columns(3 of 6)
+  @include omega()
+
+.saves
+  @include span-columns(6 of 6)
