@@ -5,9 +5,9 @@
   "main": "index.html",
   "scripts": {
     "elm-build": "elm make --output build/script.js --warn src/elm/Main.elm",
-    "elm-watch": "nodemon -w src/elm/ -e elm --exec 'npm -s run elm-build'",
+    "elm-watch": "nodemon -w src/elm/ -e elm --exec \"npm -s run elm-build\"",
     "sass-build": "gulp sass",
-    "sass-watch": "nodemon -w src/sass/ -e sass,scss --exec 'npm -s run sass-build'",
+    "sass-watch": "nodemon -w src/sass/ -e sass,scss --exec \"npm -s run sass-build\"",
     "serve": "browser-sync start --config=browser-sync.js",
     "start": "npm-run-all --parallel *-watch serve",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -36,7 +36,6 @@
     "gulp": "3.9.1",
     "gulp-autoprefixer": "3.1.1",
     "gulp-sass": "3.0.0",
-    "gulp-sourcemaps": "1.9.1",
     "nodemon": "1.11.0",
     "npm-run-all": "3.1.2"
   }
