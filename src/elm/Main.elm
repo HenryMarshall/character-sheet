@@ -260,28 +260,33 @@ skillHeader =
         , th [] [ text "Ability" ]
         , th [] [ text "Ability Mod" ]
         , th [] [ text "Ranks" ]
+        , th [] [ text "Skill Check" ]
         ]
 
 
 skill : Model -> Skill -> Html Msg
 skill model skill =
-    tr []
-        [ td [] [ text skill.name ]
-        , td [] [ text (toString (skillModifier model skill)) ]
-        , td [] [ text skill.ability ]
-          -- I hate having to pass around the entire model for this value
-        , td [] [ text (toString (modifierFromName model.abilities skill.ability)) ]
-        , td []
-            [ input
-                [ value (toString skill.ranks)
-                , onInput (SkillRank skill.name)
-                , type_ "number"
-                , Html.Attributes.min "0"
+    let
+        bonus =
+            (skillModifier model skill)
+    in
+        tr []
+            [ td [] [ text skill.name ]
+            , td [] [ text (toString bonus) ]
+            , td [] [ text skill.ability ]
+              -- I hate having to pass around the entire model for this value
+            , td [] [ text (toString (modifierFromName model.abilities skill.ability)) ]
+            , td []
+                [ input
+                    [ value (toString skill.ranks)
+                    , onInput (SkillRank skill.name)
+                    , type_ "number"
+                    , Html.Attributes.min "0"
+                    ]
+                    []
                 ]
-                []
+            , td [] [ button [ onClick Roll ] [ text "Roll" ] ]
             ]
-        , td [] [ button [ onClick Roll ] [ text "Roll" ] ]
-        ]
 
 
 dieDisplay : Model -> Html Msg
