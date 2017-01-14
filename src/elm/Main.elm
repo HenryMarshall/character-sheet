@@ -101,7 +101,7 @@ init =
 type Msg
     = AbilityScore String String
     | SkillRank String String
-    | Roll
+    | Roll Int
     | NewFace Int
 
 
@@ -118,7 +118,7 @@ update msg model =
         SkillRank name ranks ->
             ( { model | skills = (skillRank model.skills name ranks) }, Cmd.none )
 
-        Roll ->
+        Roll modifier ->
             ( model, Random.generate NewFace (Random.int 1 20) )
 
         NewFace newFace ->
@@ -188,9 +188,9 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [ class "some-class" ] [ text "Elm Character Sheet" ]
+        , dieDisplay model
         , abilities model.abilities
         , skills model
-        , dieDisplay model
         ]
 
 
@@ -238,7 +238,7 @@ ability ability =
                     |> toString
                 )
             ]
-        , td [] [ button [ onClick Roll ] [ text "Roll" ] ]
+        , td [] [ button [ onClick (Roll (abilityModifier ability.score)) ] [ text "Roll" ] ]
         ]
 
 
@@ -285,7 +285,7 @@ skill model skill =
                     ]
                     []
                 ]
-            , td [] [ button [ onClick Roll ] [ text "Roll" ] ]
+            , td [] [ button [ onClick (Roll bonus) ] [ text "Roll" ] ]
             ]
 
 
@@ -293,7 +293,6 @@ dieDisplay : Model -> Html Msg
 dieDisplay model =
     div []
         [ h1 [] [ text (toString model.dieFace) ]
-        , button [ onClick Roll ] [ text "Roll" ]
         ]
 
 
