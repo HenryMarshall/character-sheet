@@ -238,6 +238,7 @@ ability ability =
                     |> toString
                 )
             ]
+        , td [] [ button [ onClick Roll ] [ text "Roll" ] ]
         ]
 
 
@@ -279,6 +280,7 @@ skill model skill =
                 ]
                 []
             ]
+        , td [] [ button [ onClick Roll ] [ text "Roll" ] ]
         ]
 
 
