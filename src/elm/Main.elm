@@ -16,6 +16,7 @@ type alias Model =
     -- scoreboard app from knowthen. Perhaps the solution is a union type of
     -- the different abilities?
     { dieFace : Int
+    , bonus : Int
     , abilities : List Ability
     , skills : List Skill
     }
@@ -89,6 +90,7 @@ init =
                 , newSkill "CHA" "Use Magic Device"
                 ]
           , dieFace = 0
+          , bonus = 0
           }
         , Cmd.none
         )
@@ -118,8 +120,8 @@ update msg model =
         SkillRank name ranks ->
             ( { model | skills = (skillRank model.skills name ranks) }, Cmd.none )
 
-        Roll modifier ->
-            ( model, Random.generate NewFace (Random.int 1 20) )
+        Roll bonus ->
+            ( { model | bonus = bonus }, Random.generate NewFace (Random.int 1 20) )
 
         NewFace newFace ->
             ( { model | dieFace = newFace }, Cmd.none )
@@ -284,7 +286,6 @@ skill model skill =
                     , Html.Attributes.min "0"
                     ]
                     []
-                ]
             , td [] [ button [ onClick (Roll bonus) ] [ text "Roll" ] ]
             ]
 
@@ -292,7 +293,7 @@ skill model skill =
 dieDisplay : Model -> Html Msg
 dieDisplay model =
     div []
-        [ h1 [] [ text (toString model.dieFace) ]
+        [ h1 [] [ text (toString (model.dieFace + model.bonus)) ]
         ]
 
 
