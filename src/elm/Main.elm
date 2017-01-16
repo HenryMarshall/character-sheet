@@ -16,6 +16,7 @@ type alias Model =
     -- scoreboard app from knowthen. Perhaps the solution is a union type of
     -- the different abilities?
     { dieFace : Int
+    , bonus : Int
     , abilities : List Ability
     , skills : List Skill
     }
@@ -89,6 +90,7 @@ init =
                 , newSkill "CHA" "Use Magic Device"
                 ]
           , dieFace = 0
+          , bonus = 0
           }
         , Cmd.none
         )
@@ -101,7 +103,7 @@ init =
 type Msg
     = AbilityScore String String
     | SkillRank String String
-    | Roll
+    | Roll Int
     | NewFace Int
 
 
@@ -118,8 +120,8 @@ update msg model =
         SkillRank name ranks ->
             ( { model | skills = (skillRank model.skills name ranks) }, Cmd.none )
 
-        Roll ->
-            ( model, Random.generate NewFace (Random.int 1 20) )
+        Roll bonus ->
+            ( { model | bonus = bonus }, Random.generate NewFace (Random.int 1 20) )
 
         NewFace newFace ->
             ( { model | dieFace = newFace }, Cmd.none )
@@ -188,9 +190,9 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [ class "some-class" ] [ text "Elm Character Sheet" ]
+        , dieDisplay model
         , abilities model.abilities
         , skills model
-        , dieDisplay model
         ]
 
 
@@ -238,6 +240,7 @@ ability ability =
                     |> toString
                 )
             ]
+        , td [] [ button [ onClick (Roll (abilityModifier ability.score)) ] [ text "Roll" ] ]
         ]
 
 
@@ -259,34 +262,38 @@ skillHeader =
         , th [] [ text "Ability" ]
         , th [] [ text "Ability Mod" ]
         , th [] [ text "Ranks" ]
+        , th [] [ text "Skill Check" ]
         ]
 
 
 skill : Model -> Skill -> Html Msg
 skill model skill =
-    tr []
-        [ td [] [ text skill.name ]
-        , td [] [ text (toString (skillModifier model skill)) ]
-        , td [] [ text skill.ability ]
-          -- I hate having to pass around the entire model for this value
-        , td [] [ text (toString (modifierFromName model.abilities skill.ability)) ]
-        , td []
-            [ input
-                [ value (toString skill.ranks)
-                , onInput (SkillRank skill.name)
-                , type_ "number"
-                , Html.Attributes.min "0"
-                ]
-                []
+    let
+        bonus =
+            (skillModifier model skill)
+    in
+        tr []
+            [ td [] [ text skill.name ]
+            , td [] [ text (toString bonus) ]
+            , td [] [ text skill.ability ]
+              -- I hate having to pass around the entire model for this value
+            , td [] [ text (toString (modifierFromName model.abilities skill.ability)) ]
+            , td []
+                [ input
+                    [ value (toString skill.ranks)
+                    , onInput (SkillRank skill.name)
+                    , type_ "number"
+                    , Html.Attributes.min "0"
+                    ]
+                    []
+            , td [] [ button [ onClick (Roll bonus) ] [ text "Roll" ] ]
             ]
-        ]
 
 
 dieDisplay : Model -> Html Msg
 dieDisplay model =
     div []
-        [ h1 [] [ text (toString model.dieFace) ]
-        , button [ onClick Roll ] [ text "Roll" ]
+        [ h1 [] [ text (toString (model.dieFace + model.bonus)) ]
         ]
 
 
