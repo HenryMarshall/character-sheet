@@ -286,6 +286,7 @@ skill model skill =
                     , Html.Attributes.min "0"
                     ]
                     []
+                ]
             , td [] [ button [ onClick (Roll bonus) ] [ text "Roll" ] ]
             ]
 
